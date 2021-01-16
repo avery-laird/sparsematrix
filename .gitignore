@@ -8,3 +8,16 @@
 /cmake-build-debug
 /venv
 /torso1
+/.pytest_cache
+/eigen/
+/eigen_testx.mtx
+/minitestb.mtx
+/minitest.mtx
+/testb.mtx
+/testopt_mini.cpp
+/testx.mtx
+/testy.mtx
+/vol_output_x.mtx
+/vol_output_y.mtx
+/__pycache__
+/testopt.cpp
