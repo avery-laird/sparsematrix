@@ -5,6 +5,9 @@
 #include "optimized_triang_test0.cpp" //optsolve0=torso
 #include "optimized_triang_test1.cpp" //optsolve1=TSOPF_RS_b678_c2
 #include "optimized_triang_test2.cpp" //optsolve2=example
+#include "optimized_triang_test0_parallel.cpp" //optsolve0_parallel=torso
+//#include "optimized_triang_test1_parallel.cpp" //optsolve1_parallel=TSOPF_RS_b678_c2
+//#include "optimized_triang_test2_parallel.cpp" //optsolve2_parallel=example
 #include "utils.h"
 #include "matrix.h"
 #include <chrono>

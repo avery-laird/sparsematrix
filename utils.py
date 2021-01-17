@@ -1,5 +1,5 @@
 from scipy.io import mmread
-from symbolicanalysis import reachset
+from symbolicanalysis import reachset, level_order_set
 from opt_ast import *
 
 
@@ -43,8 +43,22 @@ def make_naive_solve():
     )
     return outer_loop, inner_loop
 
+def make_naive_parallel_solve():
+    start = make_naive_solve()
 
-def reachFromFiles(apath, bpath):
+
+
+def readMatrix(apath, bpath):
     A = mmread(apath)
     b = mmread(bpath)
-    return reachset(A, b)
+    return A, b
+
+
+def reachFromFiles(apath, bpath):
+    A, b = readMatrix(apath, bpath)
+    return reachset(A, b), A, b
+
+
+def levelOrderFromFiles(apath, bpath):
+    A, _ = readMatrix(apath, bpath)
+    return level_order_set(A)

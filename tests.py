@@ -6,11 +6,14 @@ from scipy.sparse import find, tril
 import numpy
 import subprocess
 import networkx as nx
+import matplotlib.pyplot as plt
 
-from symbolicanalysis import reachset
+from symbolicanalysis import reachset, level_order_set
 from transformation import Prune
 
 from utils import reachFromFiles, make_naive_solve
+
+from gen_triang import generate_c_parallel
 
 
 # class Solving(unittest.TestCase):
@@ -39,7 +42,7 @@ from utils import reachFromFiles, make_naive_solve
 
 
 def test_reachset_small():
-    r = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
+    r, _, _ = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
     assert list(nx.topological_sort(r)) == [6, 1, 7, 8, 9, 10] or list(nx.topological_sort(r) == [1, 6, 7, 8, 9, 10])
 
 
@@ -107,7 +110,7 @@ x[Li[p]] -= Lx[p] * x[j];
 
 
 def test_reachset_transform():
-    rset: nx.DiGraph = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
+    rset, _, _ = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
     outer, inner = make_naive_solve()
     reachSetInit, loop = Prune(outer, rset).run()
 
@@ -121,8 +124,37 @@ x[Li[p]] -= Lx[p] * x[j];
 
 
 def test_reachset_torso1():
-    rset: nx.DiGraph = reachFromFiles('torso1/torso1.mtx', 'b_for_torso1.mtx')
+    rset, _, _ = reachFromFiles('torso1/torso1.mtx', 'b_for_torso1.mtx')
     outer, inner = make_naive_solve()
     reachSetInit, loop = Prune(outer, rset).run()
-
     assert True
+
+
+def test_level_order_set():
+    rset, A, b = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
+    level_set, etree = level_order_set(A)
+    assert level_set == [
+        [0, 1, 3],
+        [6, 2, 4],
+        [5],
+        [7],
+        [8],
+        [9]
+    ]
+    test = nx.DiGraph()
+    test.add_edges_from([
+        (0, 6),
+        (6, 7),
+        (7, 8),
+        (8, 9),
+        (5, 7),
+        (4, 5),
+        (3, 4),
+        (2, 5),
+        (1, 2)
+    ])
+    assert nx.is_isomorphic(etree, test)
+
+def test_generate_c_parallel():
+    output = generate_c_parallel('rset_example.mtx', 'rset_example_b.mtx', '2')
+    print(output)

@@ -7,17 +7,20 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-# class Node:
-#     def __init__(self, label):
-#         self.label = label
-#         self.outgoing: list[Node] = []
-#
-#     def to(self, other: Node):
-#         self.outgoing.append(Node)
-#
-# class Graph:
-#     def __init__(self):
-#         self.nodes: list[Node] = []
+def initial_directed_graph(matrix: coo_matrix) -> nx.DiGraph:
+    """
+    Generate a DAG from matrix A
+    :param matrix:
+    :param b:
+    :return:
+    """
+    (m, n) = matrix.shape
+    G = nx.DiGraph()
+    G.add_nodes_from(range(1, n + 1))
+    (rows, cols) = tril(matrix, -1).nonzero()
+    for i, j in zip(rows, cols):
+        G.add_edge(j + 1, i + 1)
+    return G
 
 
 def reachset(matrix: coo_matrix, b: coo_matrix) -> nx.DiGraph:
@@ -32,13 +35,7 @@ def reachset(matrix: coo_matrix, b: coo_matrix) -> nx.DiGraph:
     :param b:
     :return:
     """
-    A = matrix
-    (m, n) = A.shape
-    G = nx.DiGraph()
-    G.add_nodes_from(range(1, n + 1))
-    (rows, cols) = tril(A, -1).nonzero()
-    for i, j in zip(rows, cols):
-        G.add_edge(j + 1, i + 1)
+    G = initial_directed_graph(matrix)
     # do a DFS from beta
     reach = nx.DiGraph()
     beta = b
@@ -46,7 +43,35 @@ def reachset(matrix: coo_matrix, b: coo_matrix) -> nx.DiGraph:
     for r in betaRows:
         tree = nx.dfs_tree(G, r + 1)
         reach = nx.compose(reach, tree)
-
-    # nx.draw(reach, with_labels=True)
-    # plt.show()
     return reach
+
+
+def level_order_set(A: coo_matrix):
+    """
+    Given a matrix A, return its elimination tree
+    :param reachset:
+    :param A:
+    :return:
+    """
+    csc = tril(A).tocsc()
+    etree = nx.DiGraph()
+    # add an edge for each first non-zero value
+    # in the row
+    nonzeros = len(csc.indices)
+    for col, col_start in enumerate(csc.indptr):
+        if col_start + 1 >= nonzeros: break;
+        # first off-diagonal non-zero entry
+        etree.add_edge(col, csc.indices[col_start + 1])
+    # for each source in the etree, do a BFS
+    level_set = []
+    schedule = etree.copy()
+    while schedule.order() > 0:
+        level = []
+        for node in list(schedule.nodes):
+            if schedule.in_degree(node) > 0: continue
+            # otherwise, add the node to the level set
+            # and remove it from the etree
+            level.append(node)
+        schedule.remove_nodes_from(level)
+        level_set.append(level)
+    return level_set, etree

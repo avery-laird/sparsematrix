@@ -8,11 +8,15 @@ add_compile_definitions(
         WRITE_PATH="${WRITE_PATH}"
 )
 
+find_package(OpenMP REQUIRED)
+
 add_executable(starter starter.cpp utils.cpp matrix.cpp)
 add_executable(bench bench.cpp  utils.cpp matrix.cpp)
 
 add_executable(eigentest eigentest.cpp)
 target_include_directories(eigentest PUBLIC eigen)
+
+target_link_libraries(bench PRIVATE OpenMP::OpenMP_CXX)
 
 add_custom_target(
         test_c ALL

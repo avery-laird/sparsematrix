@@ -63,6 +63,14 @@ class IntType(Type):
         return 'int'
 
 
+class VectorType(Type):
+    def __init__(self, elem_type):
+        self.elem_type = elem_type
+
+    def gen(self) -> str:
+        return "std::vector<{}>".format(self.elem_type.gen())
+
+
 class Number(Node):
     def __init__(self, value):
         self.value = value
@@ -104,13 +112,40 @@ class ArrayInit(Node):
     more convenient to implement just a subset
     of a full C++ AST
     """
-    def __init__(self, t: Type, name: Iden, values: list):
+
+    def __init__(self, t: Type, name: Iden, values: list[Node]):
         self.type = t
         self.values = values
         self.name = name
 
     def gen(self) -> str:
-        return "{} {}[] = {{{}}}".format(self.type.gen(), self.name.gen(), ",".join(self.values))
+        return "{} {}[] = {{{}}}".format(self.type.gen(), self.name.gen(), ",".join([n.gen() for n in self.values]))
+
+
+class ContainerInit(ArrayInit):
+    def gen(self) -> str:
+        return "{} {} = {{{}}}".format(self.type.gen(), self.name.gen(), ",".join([n.gen() for n in self.values]))
+
+
+class CommaSeparated(Node):
+    def __init__(self, values: list[Node]):
+        self.values = values
+
+    def gen(self) -> str:
+        return ",".join([n.gen() for n in self.values])
+
+
+class Block(Node):
+    """
+    Represents a scoped block.
+    """
+
+    def __init__(self, value: Node):
+        self.value = value
+
+    def gen(self) -> str:
+        return "{{{}}}".format(self.value.gen())
+
 
 class Symbol(Node):
     pass
@@ -193,18 +228,27 @@ class PostfixInc(PostfixOp):
 
 
 class Address(Node):
-    def __init__(self, target: Node, addr: Node):
+    def __init__(self, target: Node, addr):
         self.target = target
         self.addr = addr
 
     def gen(self) -> str:
-        return "{}[{}]".format(self.target.gen(), self.addr.gen())
+        if isinstance(self.addr, list):
+            return "{}{}".format(self.target.gen(), "".join(["[{}]".format(x.gen()) for x in self.addr]))
+        else:
+            return "{}[{}]".format(self.target.gen(), self.addr.gen())
 
 
-class Increment(Node):
-    def __init__(self):
-        pass
+class Pragma(Node):
+    """
+    A very low level node for inserting preprocessor
+    statements into the AST. It only stores the text
+    to be printed, and nothing else about the internal
+    structure.
+    """
 
+    def __init__(self, text: str):
+        self.text = text
 
-class ReturnType(Node):
-    pass
+    def gen(self) -> str:
+        return "#pragma {}".format(self.text)
