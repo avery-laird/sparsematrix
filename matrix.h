@@ -7,6 +7,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <cmath>
 #include "utils.h"
 
 template<class ValueType>
@@ -16,9 +17,11 @@ public:
         bool res = inputRHS(path, n, NNZ, m);
         if (!res) throw std::runtime_error("failed to read vector");
     }
+
     explicit Vector(int n) {
         m = new ValueType[n]();
     }
+
     int n;
     int NNZ;
     ValueType *m;
@@ -42,6 +45,16 @@ public:
 
 
 template<class ValueType>
-bool operator==(Vector<ValueType> const &a, Vector<ValueType> const &b);
+bool operator==(Vector<ValueType> const &a, Vector<ValueType> const &b) {
+    if (a.n != b.n) return false;
+    for (int i = 0; i < a.n; i++) {
+        if (a.m[i] == b.m[i] ||
+            nearlyEqual(a.m[i], b.m[i]) ||
+            (std::isnan(a.m[i]) || std::isinf(a.m[i])) && (std::isnan(b.m[i]) || std::isinf(b.m[i])))
+            continue;
+        else return false;
+    }
+    return true;
+}
 
 #endif //SPARSE_MATRIX_OPT_MATRIX_H
