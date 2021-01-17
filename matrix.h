@@ -22,8 +22,12 @@ public:
         m = new ValueType[n]();
     }
 
-    int n;
-    int NNZ;
+    Vector(const Vector<ValueType>& v) : n(v.n), NNZ(v.NNZ) {
+        std::copy(v.m, v.m+v.n, m);
+    }
+
+    int n{};
+    int NNZ{};
     ValueType *m;
 };
 
