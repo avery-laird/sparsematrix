@@ -12,6 +12,7 @@ from transformation import Prune
 
 from utils import reachFromFiles, make_naive_solve
 
+
 # class Solving(unittest.TestCase):
 #     def setUp(self):
 #         # build starter.cpp
@@ -37,12 +38,9 @@ from utils import reachFromFiles, make_naive_solve
 #             numpy.array_equal(k1, k2)
 
 
-
 def test_reachset_small():
     r = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
-    t = nx.DiGraph()
-    t.add_nodes_from([1, 6, 7, 8, 9, 10])
-    assert nx.is_isomorphic(r, t)
+    assert list(nx.topological_sort(r)) == [6, 1, 7, 8, 9, 10] or list(nx.topological_sort(r) == [1, 6, 7, 8, 9, 10])
 
 
 # def test_reachset_torso():
@@ -113,7 +111,7 @@ def test_reachset_transform():
     outer, inner = make_naive_solve()
     reachSetInit, loop = Prune(outer, rset).run()
 
-    assert loop.gen() == """for (px = 0; px < reachSetSize; px++) {
+    assert loop.gen() == """for (px = 0; px < 6; px++) {
 j = reachSet[px];
 x[j] /= Lx[Lp[j]];
 for (p = Lp[j] + 1; p < Lp[j + 1]; p++) {

@@ -45,8 +45,7 @@ def reachset(matrix: coo_matrix, b: coo_matrix) -> nx.DiGraph:
     (betaRows, _) = beta.nonzero()
     for r in betaRows:
         tree = nx.dfs_tree(G, r + 1)
-        reach.add_nodes_from(tree)
-        reach.add_edges_from(tree.edges)
+        reach = nx.compose(reach, tree)
 
     # nx.draw(reach, with_labels=True)
     # plt.show()

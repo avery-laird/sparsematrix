@@ -8,6 +8,17 @@ add_compile_definitions(
         WRITE_PATH="${WRITE_PATH}"
 )
 
-add_executable(starter starter.cpp)
+add_executable(starter starter.cpp utils.cpp matrix.cpp)
+add_executable(bench bench.cpp  utils.cpp matrix.cpp)
+
 add_executable(eigentest eigentest.cpp)
 target_include_directories(eigentest PUBLIC eigen)
+
+add_custom_target(
+        test_c ALL
+        COMMAND source ${CMAKE_CURRENT_SOURCE_DIR}/venv/bin/activate && python ${CMAKE_CURRENT_SOURCE_DIR}/gen_triang.py
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        BYPRODUCTS optimized_triang_test0.cpp optimized_triang_test1.cpp optimized_triang_test2.cpp
+)
+
+add_dependencies(bench test_c)
