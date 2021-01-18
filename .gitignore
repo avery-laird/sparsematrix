@@ -22,3 +22,6 @@
 /__pycache__
 /testopt.cpp
 /optimized_triang_test*
+/eigentest.cpp
+/optimize.cpp
+/starter.cpp
