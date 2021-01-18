@@ -3,15 +3,18 @@ import networkx as nx
 
 
 class Traversal:
-    pass
+    """
+    Defines a consistent interface for all transformations.
+    """
+
+    def run(self):
+        raise Exception("Traversal is abstract!")
 
 
 class Prune(Traversal):
     """
-    given a top-level for-loop and reach set,
-    return two statements:
-        1 the allocated reachset
-        2 the pruned for-loop
+    Using the reach-set, prune the iteration space of the
+    naive solver.
     """
 
     def __init__(self, loop: ForLoop, reach_set: nx.DiGraph):
@@ -19,6 +22,12 @@ class Prune(Traversal):
         self.reach_set = reach_set
 
     def run(self):
+        """
+        given a top-level for-loop and reach set,
+        return two statements:
+            1 the allocated reachset
+            2 the pruned for-loop
+        """
         px = Iden("px")
         reachSetSize = Int(self.reach_set.order())
         reachSet = Iden("reachSet")
@@ -40,6 +49,11 @@ class Prune(Traversal):
 
 
 class ParallelizeOutput:
+    """
+    Defines the interface for results
+    returned by Parallelize.run()
+    """
+
     def __init__(self,
                  level_set_init,
                  level_set_length,
@@ -62,12 +76,11 @@ class Parallelize(Traversal):
         parallel, using the level order
         set to determine which loops can
         execute independently
-        :param reachset:
         :return:
         """
         level_set_init = Statement(ContainerInit(VectorType(VectorType(IntType())), Iden("level_sets"),
-                                             [Block(CommaSeparated([Int(e) for e in elem])) for elem in
-                                              self.level_order_sets]))
+                                                 [Block(CommaSeparated([Int(e) for e in elem])) for elem in
+                                                  self.level_order_sets]))
         level_set_length = Statement(Assign(Iden("level_set_len"), Int(len(self.level_order_sets))))
         level_set_element_length_init = Statement(ArrayInit(IntType(), Iden("level_set_element_length"),
                                                             [Int(len(e)) for e in self.level_order_sets]))

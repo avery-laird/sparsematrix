@@ -16,31 +16,6 @@ from utils import reachFromFiles, make_naive_solve
 from gen_triang import generate_c_parallel
 
 
-# class Solving(unittest.TestCase):
-#     def setUp(self):
-#         # build starter.cpp
-#         subprocess.run(["cmake", "-B", "cmake-build-debug"], check=True)
-#         subprocess.run(["make"],
-#                        cwd="/home/avery/Projects/sparse_matrix_opt/cmake-build-debug", check=True)
-#
-#     def test_correct_result(self):
-#         # run starter.cpp
-#         # subprocess.run([
-#         #     "/home/avery/Projects/sparse_matrix_opt/cmake-build-debug/starter"
-#         # ])
-#         A = tril(mmread('torso1/torso1.mtx'))
-#         b = mmread('b_for_torso1.mtx')
-#         x = mmread('testx.mtx')
-#         xcheck = A.multiply(x)
-#         # https://stackoverflow.com/questions/47770906/how-to-test-if-two-sparse-arrays-are-almost-equal
-#         (i1, j1, k1) = find(xcheck)
-#         (i2, j2, k2) = find(b)
-#         return \
-#             numpy.array_equal(i1, i2) and \
-#             numpy.array_equal(j1, j2) and \
-#             numpy.array_equal(k1, k2)
-
-
 def test_reachset_small():
     r, _, _ = reachFromFiles('rset_example.mtx', 'rset_example_b.mtx')
     assert list(nx.topological_sort(r)) == [6, 1, 7, 8, 9, 10] or list(nx.topological_sort(r) == [1, 6, 7, 8, 9, 10])
@@ -154,6 +129,7 @@ def test_level_order_set():
         (1, 2)
     ])
     assert nx.is_isomorphic(etree, test)
+
 
 def test_generate_c_parallel():
     output = generate_c_parallel('rset_example.mtx', 'rset_example_b.mtx', '2')

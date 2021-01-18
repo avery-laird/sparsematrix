@@ -36,7 +36,7 @@ template<class ValueType>
 class SparseMatrix {
 public:
     explicit SparseMatrix(std::string path) {
-        bool res = readMatrix(path, n, NNZ, col, row, m);
+        bool res = inputMatrix(path, n, NNZ, col, row, m);
         if (!res) throw std::runtime_error("failed to read matrix");
     }
 

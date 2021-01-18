@@ -49,6 +49,7 @@ def reachset(matrix: coo_matrix, b: coo_matrix) -> nx.DiGraph:
 def level_order_set(A: coo_matrix):
     """
     Given a matrix A, return its elimination tree
+    and level order set
     :param reachset:
     :param A:
     :return:

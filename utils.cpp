@@ -2,18 +2,12 @@
 // Created by avery on 2021-01-16.
 //
 
-
-// Copied from problem specification
-#include <string>
-#include <stdexcept>
 #include <cmath>
 #include <limits>
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <set>
 #include "utils.h"
 
-
+// copied from program specification
 /*
 * Lower triangular solver Lx=b
 * L is stored in the compressed column storage format

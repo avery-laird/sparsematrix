@@ -70,7 +70,7 @@ def test_helper(paths, parallel=False):
 
 
 if __name__ == "__main__":
-    if (len(sys.argv) == 2):
+    if (len(sys.argv) == 3):
         # then use the arguments to generate a new file
         # the expected format is python gen_triang.py <A path> <b path>
         print("Generating test from {} and printing to stdout (redirect to whatever file is convenient)".format(
@@ -79,11 +79,13 @@ if __name__ == "__main__":
         exit(0)
 
     test_helper([
-        # ('torso1/torso1.mtx', 'b_for_torso1.mtx'),
-        # ('TSOPF_RS_b678_c2/TSOPF_RS_b678_c2.mtx', 'b_for_TSOPF_RS_b678_c2_b.mtx'),
+        ('torso1/torso1.mtx', 'b_for_torso1.mtx'),
+        ('TSOPF_RS_b678_c2/TSOPF_RS_b678_c2.mtx', 'b_for_TSOPF_RS_b678_c2_b.mtx'),
         ('rset_example.mtx', 'rset_example_b.mtx')
     ])
 
     test_helper([
+        ('torso1/torso1.mtx', 'b_for_torso1.mtx'),
+        ('TSOPF_RS_b678_c2/TSOPF_RS_b678_c2.mtx', 'b_for_TSOPF_RS_b678_c2_b.mtx'),
         ('rset_example.mtx', 'rset_example_b.mtx')
     ], parallel=True)

@@ -9,12 +9,12 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <set>
 
 int lsolve(int n, int *Lp, int *Li, double *Lx, double *&x);
 
 
-// FOR TESTING: sympiler's mm reader
-// TODO replace with my own later
+// FOR TESTING AGAINST MY INPUTMATRIX(): sympiler's mm reader
 /*
  * reading a CSC matrix from a coordinate file, stored col-ordered
  */
@@ -143,6 +143,89 @@ bool inputRHS(std::string rhsPath, int &n, int &numberNonZero, ValueType *&x) {
         std::istringstream inputstream(line);
         if (!(inputstream >> row >> col >> val)) return false;
         x[row - 1] = val;
+    }
+    return true;
+}
+
+
+struct element {
+    int row;
+    int col;
+    double val;
+
+    element(int row, int col, double val)
+            : row(row), col(col), val(val) {}
+};
+
+/*
+ * Given a filepath, copy the non-zero entries of the matrix into memory.
+ * The matrix must be in matrix market format.
+ * The matrix is stored in memory in CSC format.
+ * The file preamble contains lines starting with %, which are ignored
+ * The first line which does not start with % is the form: <# rows> <# cols> <nnz>
+ * All subsequent lines are of the form <row> <col> <val>
+ *
+ */
+template<class ValueType>
+bool inputMatrix(std::string filePath, int &n, int &NNZ, int *&Lp, int *&Li, ValueType *&Lx) {
+    // TODO: ignore everything above diagonal
+    std::ifstream matrixFile(filePath);
+    std::string line;
+    int numberRows, numberCols, numberNonZero;
+    while (std::getline(matrixFile, line)) {
+        std::istringstream inputstream(line);
+        if (line[0] == '%') continue;
+        if (!(inputstream >> numberRows >> numberCols >> numberNonZero))
+            return false;
+        else break;
+    }
+    // assume L is square
+    if (numberRows != numberCols) return false;
+    // allocate memory for L and b
+    Lp = new int[numberCols]; // column pointers
+    Li = new int[numberNonZero]; // row pointers
+    Lx = new ValueType[numberNonZero]; // values
+    n = numberCols;
+    NNZ = numberNonZero;
+    // 2nd phase: read the actual matrix.
+    // Imagine the full matrix is stretched out and
+    // arranged left-to-right by column. First store
+    // the start of each non-zero stretch in Lp.
+    // Then, remove all the zeros, and store nz elements
+    // in Lx. Finally, for each element in Lx, store the
+    // row in Li.
+    // The matrixmarket format doesn't guarantee that elements
+    // are in any strictly increasing order.
+    int indexp = 0;
+    int row, col;
+    double val;
+    // first, read all values.
+    // https://stackoverflow.com/questions/2620862/using-custom-stdset-comparator
+    auto cmp = [numberCols](element a, element b) { return a.col * numberCols + a.row < b.col * numberCols + b.row; };
+    std::multiset<element, decltype(cmp)> entries(cmp);
+    while (std::getline(matrixFile, line)) {
+        std::istringstream inputstream(line);
+        if (!(inputstream >> row >> col >> val)) return false;
+        if (col > row) continue;
+        entries.emplace(row - 1, col - 1, val);
+    }
+    int currentCol = 0;
+    int countNonZero = 0;
+    int i = 0;
+    Lp[0] = 0;
+    int lpp = 0;
+    for (auto entry : entries) {
+        Lx[i] = entry.val; // always store the value no matter what
+        // next, store the row
+        Li[i++] = entry.row;
+        // Lp is groups of two ranges, start col and end col
+        // every time the column increases, add the index of
+        // the last entry in Lx
+        for (; currentCol < entry.col; currentCol++, countNonZero = 0) {
+            Lp[lpp + 1] = Lp[lpp] + countNonZero;
+            lpp++;
+        }
+        countNonZero++;
     }
     return true;
 }

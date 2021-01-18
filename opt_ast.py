@@ -63,6 +63,11 @@ class IntType(Type):
         return 'int'
 
 
+class IntPtr(Type):
+    def gen(self) -> str:
+        return 'int *'
+
+
 class VectorType(Type):
     def __init__(self, elem_type):
         self.elem_type = elem_type
@@ -113,13 +118,15 @@ class ArrayInit(Node):
     of a full C++ AST
     """
 
-    def __init__(self, t: Type, name: Iden, values: list[Node]):
+    def __init__(self, t: Type, name: Iden, values: list[Node], size=None):
         self.type = t
         self.values = values
         self.name = name
+        self.size = size
 
     def gen(self) -> str:
-        return "{} {}[] = {{{}}}".format(self.type.gen(), self.name.gen(), ",".join([n.gen() for n in self.values]))
+        return "{} {}[{}] = {{{}}}".format(self.type.gen(), self.name.gen(), self.size.gen() if self.size else "",
+                                           ",".join([n.gen() for n in self.values]))
 
 
 class ContainerInit(ArrayInit):
