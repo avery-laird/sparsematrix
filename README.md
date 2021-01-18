@@ -36,9 +36,9 @@ The second option is to run the command:
 python gen_triang.py <path/to/matrix/A> <path/to/vector/b> > <desired_file>.cpp 
 ```
 
-And then use <desired_file>.cpp as required.
+And then use `<desired_file>.cpp` as required.
 
-# Tests
+# Test
 
 The file `tests.py` contains some useful tests:
 

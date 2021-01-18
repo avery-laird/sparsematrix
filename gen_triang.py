@@ -41,6 +41,15 @@ int optsolve{}(int n, int *Lp, int *Li, double *Lx, double *&x) {{
 
 
 def generate_c(apath, bpath, funcid):
+    """
+    First, compute the reach set. Then, pass that to
+    the Prune optimizer.
+    Finally, output the optimized code.
+    :param apath:
+    :param bpath:
+    :param funcid:
+    :return:
+    """
     rset, A, b = reachFromFiles(apath, bpath)
     outer, inner = make_naive_solve()
     reachSetInit, loop = Prune(outer, rset).run()
@@ -48,6 +57,17 @@ def generate_c(apath, bpath, funcid):
 
 
 def generate_c_parallel(apath, bpath, funcid):
+    """
+    First, compute the level order sets from the matrix A
+    and vector b.
+    Then, pass this and the naive solver AST to the
+    Parallize optimizer.
+    Finally, return the optimized code.
+    :param apath:
+    :param bpath:
+    :param funcid:
+    :return:
+    """
     level_order, _ = levelOrderFromFiles(apath, bpath)
     outer, inner = make_naive_solve()
     transformed = Parallelize(outer, level_order).run()

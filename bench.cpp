@@ -16,6 +16,10 @@
 #include <iostream>
 
 
+/*
+ * Represents a test using matrix A from a_path,
+ * and vector B from b_path
+ */
 template<class T>
 struct TestRecord {
     std::string a_path;
@@ -23,6 +27,13 @@ struct TestRecord {
     std::string name;
 };
 
+/*
+ * First, a Test object will load matrix A and vector b.
+ * Then, to test different solvers, use run().
+ *
+ * A single Test object can test multiple solvers. To
+ * test different matrices, create a new Test object.
+ */
 template<class T>
 class Test {
 public:

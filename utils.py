@@ -4,6 +4,11 @@ from opt_ast import *
 
 
 def make_naive_solve():
+    """
+    This function constructs a representation of the
+    naive solver included with the project specification.
+    :return:
+    """
     x = Iden("x")
     Li = Iden("Li")
     p = Iden("p")
@@ -42,10 +47,6 @@ def make_naive_solve():
         ]
     )
     return outer_loop, inner_loop
-
-def make_naive_parallel_solve():
-    start = make_naive_solve()
-
 
 
 def readMatrix(apath, bpath):
