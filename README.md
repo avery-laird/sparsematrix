@@ -1,10 +1,12 @@
 # Build 
 
-### 1) Setup up python
+### 1) Requirements
 
-Create a virtual environment (recommend)
+Setup python and create a virtual environment (recommended).
 
-Use pip to install the packages in `requirements.txt`
+Install OpenMP.
+
+Use pip to install the packages in `requirements.txt`.
 
 ### 2) Create Makefile
 

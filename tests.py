@@ -1,12 +1,6 @@
 import pytest
 from opt_ast import *
-
-from scipy.io import mmread
-from scipy.sparse import find, tril
-import numpy
-import subprocess
 import networkx as nx
-import matplotlib.pyplot as plt
 
 from symbolicanalysis import reachset, level_order_set
 from transformation import Prune
